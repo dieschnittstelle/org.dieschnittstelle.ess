@@ -35,7 +35,16 @@ public class TouchpointServletContextListener implements ServletContextListener 
 			exec.store();
 		}
 	}
-
+// servlet Listener
+//	Anwendung starten
+//	auf Dateipfad zugegriffen
+//	touchpoints.data enthält die Dateiinhalte
+//	load werden Inhalte gehalten
+//	exec enthält nach dem Load die geladenen Kontextinhalte
+//	setAttribute (Servlet Kontext) setzt einen Wert/Objekt in einen für alle bestandteile meiner Anwendung zugänglichen Bereich
+//	dadurch können alle Bereiche darauf zugreifen
+//	am Ende soll sowohl über GUI als auch API Daten gelesen + ERSTELLT/gelöscht WERDEN -> Zugriff muss von überall möglich auf exec Objekt möglich  sein
+//	store = Methode die aufgerufen wird wenn über CL 's' kommt
 	@Override
 	public void contextInitialized(ServletContextEvent evt) {
 		show("TouchpointServletContextListener: contextInitialised() invoked\n");

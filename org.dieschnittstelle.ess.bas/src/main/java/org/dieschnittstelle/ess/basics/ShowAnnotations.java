@@ -2,46 +2,90 @@ package org.dieschnittstelle.ess.basics;
 
 
 import org.dieschnittstelle.ess.basics.annotations.AnnotatedStockItemBuilder;
+
 import org.dieschnittstelle.ess.basics.annotations.StockItemProxyImpl;
+import org.dieschnittstelle.ess.basics.annotations.Units;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.dieschnittstelle.ess.utils.Utils.*;
 
 public class ShowAnnotations {
 
-	public static void main(String[] args) {
-		// we initialise the collection
-		StockItemCollection collection = new StockItemCollection(
-				"stockitems_annotations.xml", new AnnotatedStockItemBuilder());
-		// we load the contents into the collection
-		collection.load();
+    public static void main(String[] args) {
+        // we initialise the collection
+        StockItemCollection collection = new StockItemCollection(
+                "stockitems_annotations.xml", new AnnotatedStockItemBuilder());
+        // we load the contents into the collection
+        collection.load();
 
-		for (IStockItem consumable : collection.getStockItems()) {
-			showAttributes(((StockItemProxyImpl)consumable).getProxiedObject());
-		}
+        for (IStockItem consumable : collection.getStockItems()) {
+            ;
+            showAttributes(((StockItemProxyImpl) consumable).getProxiedObject());
+        }
 
-		// we initialise a consumer
-		Consumer consumer = new Consumer();
-		// ... and let them consume
-		consumer.doShopping(collection.getStockItems());
-	}
+//        // we initialise a consumer
+//        Consumer consumer = new Consumer();
+//        // ... and let them consume
+//        consumer.doShopping(collection.getStockItems());
+    }
 
-	/*
-	 * TODO BAS2
-	 */
-	private static void showAttributes(Object consumable) {
-		show("class is: " + consumable.getClass());
+    /*
+     * TODO BAS2
+     */
 
-		// TODO BAS2: create a string representation of consumable by iterating
-		//  over the object's attributes / fields as provided by its class
-		//  and reading out the attribute values. The string representation
-		//  will then be built from the field names and field values.
-		//  Note that only read-access to fields via getters or direct access
-		//  is required here.
+//    BAS2 dirty solution
+//    private static void showAttributes(Object consumable) {
+//        Class klass = consumable.getClass();
+//        String result = "";
+//
+//        for (Field field : klass.getDeclaredFields()) {
+//            field.setAccessible(true);
+//
+//            try {
+//                result = result.concat(" " + field.getName() + ":" + field.get(consumable) + ",");
+//            } catch (IllegalAccessException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        result = result.substring(0, result.length() -1).concat("}");
+//        show("{" + klass.getSimpleName() + result);
+//    }
 
-		// TODO BAS3: if the new @DisplayAs annotation is present on a field,
-		//  the string representation will not use the field's name, but the name
-		//  specified in the the annotation. Regardless of @DisplayAs being present
-		//  or not, the field's value will be included in the string representation.
-	}
+    //    BAS2 invoke solution
+    private static void showAttributes(Object consumable) {
+        Class consumableClass = consumable.getClass();
+        String result = "";
+
+        for (Field field : consumableClass.getDeclaredFields()) {
+            try {
+                String getterName = getAccessorNameForField("get", field.getName());
+                Method getter = consumableClass.getDeclaredMethod(getterName);
+                result = result.concat(" " + field.getName() + ":" + getter.invoke(consumable).toString() + ",");
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+        }
+        result = result.substring(0, result.length() -1).concat("}");
+        show("{" + consumableClass.getSimpleName() + result);
+    }
+
+
+
+    // create getter/setter names ( from ReflectedStockItemBuilder.java )
+    public static String getAccessorNameForField(String accessor, String fieldName) {
+        return accessor + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+    }
+
 
 }

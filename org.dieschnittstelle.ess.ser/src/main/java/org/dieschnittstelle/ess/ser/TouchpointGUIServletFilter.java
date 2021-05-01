@@ -37,6 +37,14 @@ public class TouchpointGUIServletFilter implements Filter {
 
 	}
 
+//	greift auf request-header zu und prüft ob accept language header da ist
+//	ACH wird von browsern gesetzt
+//	wenn man einen nicht-broweser-client hat, ist der Header normalerweise nicht da
+//	so kann Anwendung filtern ob tatsächlich von GUI-Client zugegriffen wird
+//	oder ob API-Client zugreift (das wollen wir nicht)
+// = Authentifizierung mit Filter
+//	Filter: nur requests durchzulesen die von GUI Clients kommen
+//	Aufgabe: Querschnittsfunktionen umzusetzen
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
