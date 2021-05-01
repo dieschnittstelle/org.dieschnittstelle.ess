@@ -8,21 +8,21 @@
     <stockitem>
        <brandname>Ritter Sport</brandname>
        <class>org.dieschnittstelle.ess.basics.annotations.stockitemtypes.Schokolade</class>
-       <units>16</units>        
-    </stockitem>  
+       <units>16</units>
+    </stockitem>
     <stockitem>
        <brandname>Lindt</brandname>
        <class>org.dieschnittstelle.ess.basics.annotations.stockitemtypes.Schokolade</class>
-       <units>20</units>        
-    </stockitem>    
+       <units>20</units>
+    </stockitem>
     <stockitem>
        <brandname>Mark Brandenburg</brandname>
        <class>org.dieschnittstelle.ess.basics.annotations.stockitemtypes.Milch</class>
-       <units>10</units>        
-    </stockitem>   
+       <units>10</units>
+    </stockitem>
     <stockitem>
        <brandname>Mark Brandenburg Fettarm</brandname>
        <class>org.dieschnittstelle.ess.basics.annotations.stockitemtypes.Milch</class>
-       <units>20</units>        
-    </stockitem>    
+       <units>20</units>
+    </stockitem>
 </stockitems>

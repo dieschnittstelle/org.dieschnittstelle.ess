@@ -3,15 +3,15 @@
     <stockitem>
        <brandname>Milka</brandname>
        <class>org.dieschnittstelle.ess.basics.reflection.stockitemtypes.Chocolate</class>
-       <units>24</units>        
+       <units>24</units>
        <price>119</price>
     </stockitem>
     <stockitem>
        <brandname>Ritter Sport</brandname>
        <class>org.dieschnittstelle.ess.basics.reflection.stockitemtypes.Chocolate</class>
-       <units>16</units>        
+       <units>16</units>
        <price>99</price>
-    </stockitem>    
+    </stockitem>
     <stockitem>
        <brandname>Mark Brandenburg</brandname>
        <class>org.dieschnittstelle.ess.basics.reflection.stockitemtypes.Milk</class>

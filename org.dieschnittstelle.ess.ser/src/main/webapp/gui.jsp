@@ -55,6 +55,7 @@ else {
 			<td></td>
 		</tr>
 		<!--  iterate over the touchpoints -->
+<%--		<%: dynamischer Code--%>
 		<%
 			List<AbstractTouchpoint> touchpoints = (List<AbstractTouchpoint>) request
 					.getAttribute("touchpoints");

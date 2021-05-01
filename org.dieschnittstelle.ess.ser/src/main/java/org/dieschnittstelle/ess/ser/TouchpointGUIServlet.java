@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import static org.dieschnittstelle.ess.utils.Utils.show;
 
+// servlet wird ausgeführt bei hhtp-get-request
+// müssen für jeden request, den sie bearbeiten sollen, eine Bearbeitungsmethode bereitstellen
 public class TouchpointGUIServlet extends HttpServlet {
 
 	protected static Logger logger = org.apache.logging.log4j.LogManager
@@ -22,6 +24,14 @@ public class TouchpointGUIServlet extends HttpServlet {
 	public TouchpointGUIServlet() {
 		show("TouchpointGUIServlet: constructor invoked\n");
 	}
+
+//	ruft displayView-Methode auf
+//	displayView generiert Ansicht die bereit gestellt weden soll
+//	hat dafür den hhtp request
+//	zunäacht brauch ich die Daten die angezeigt werden sollen (touchpoint), dann Ansicht generieren
+//	zunäachst auf Objekt zugreifen was die Daten enthält (Touchpoint.CRUDEXECUTER) -> wird aus ServletContext ausgelesen
+	
+
 
 	@Override
 	protected void doGet(HttpServletRequest request,
@@ -93,6 +103,10 @@ public class TouchpointGUIServlet extends HttpServlet {
 	/*
 	 * now pass the request to the jsp for display
 	 */
+//	 touchpointCRUD Name was beim Filter hinterlegt ist
+//	interne Weiterleitung durch dispatcher
+//	request Dispatcher kriegt Pfad + reuqest
+//	auf	request wird zuvor die Liste der touchspoints geschrieben
 	private void displayView(HttpServletRequest request,
 							 HttpServletResponse response) {
 		/*
