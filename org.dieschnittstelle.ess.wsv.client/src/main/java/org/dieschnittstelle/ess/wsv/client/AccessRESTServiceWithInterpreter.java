@@ -1,17 +1,15 @@
 package org.dieschnittstelle.ess.wsv.client;
 
-import java.io.IOException;
-import java.util.List;
-
 import org.apache.logging.log4j.Logger;
 import org.dieschnittstelle.ess.entities.crm.Address;
 import org.dieschnittstelle.ess.entities.crm.StationaryTouchpoint;
 import org.dieschnittstelle.ess.utils.Utils;
 import org.dieschnittstelle.ess.wsv.client.service.ITouchpointCRUDService;
-
 import org.dieschnittstelle.ess.wsv.interpreter.JAXRSClientInterpreter;
 
-import static org.dieschnittstelle.ess.utils.Utils.*;
+import java.util.List;
+
+import static org.dieschnittstelle.ess.utils.Utils.show;
 
 public class AccessRESTServiceWithInterpreter {
 
@@ -23,15 +21,15 @@ public class AccessRESTServiceWithInterpreter {
      */
     public static void main(String[] args) {
 
-		/*
-		 * TODO WSV1 (here and following TODOs): create an instance of the invocation handler passing the service
-		 * interface and the base url
-		 */
+        /*
+         * TODO WSV1 (here and following TODOs): create an instance of the invocation handler passing the service
+         * interface and the base url
+         */
         JAXRSClientInterpreter invocationHandler = null;
 
-		/*
-		 * TODO: create a client for the web service using Proxy.newProxyInstance()
-		 */
+        /*
+         * TODO: create a client for the web service using Proxy.newProxyInstance()
+         */
         ITouchpointCRUDService serviceProxy = null;
 
         show("serviceProxy: " + serviceProxy);
@@ -86,4 +84,3 @@ public class AccessRESTServiceWithInterpreter {
         Utils.step();
     }
 }
-

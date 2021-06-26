@@ -3,6 +3,7 @@ package org.dieschnittstelle.ess.basics;
 
 import org.dieschnittstelle.ess.basics.annotations.AnnotatedStockItemBuilder;
 
+import org.dieschnittstelle.ess.basics.annotations.DisplayAs;
 import org.dieschnittstelle.ess.basics.annotations.StockItemProxyImpl;
 import org.dieschnittstelle.ess.basics.annotations.Units;
 
@@ -35,10 +36,6 @@ public class ShowAnnotations {
 //        consumer.doShopping(collection.getStockItems());
     }
 
-    /*
-     * TODO BAS2
-     */
-
 //    BAS2 dirty solution
 //    private static void showAttributes(Object consumable) {
 //        Class klass = consumable.getClass();
@@ -57,27 +54,42 @@ public class ShowAnnotations {
 //        show("{" + klass.getSimpleName() + result);
 //    }
 
-    //    BAS2 invoke solution
+    //    BAS2/BAS3 invoke solution
     private static void showAttributes(Object consumable) {
         Class consumableClass = consumable.getClass();
         String result = "";
 
         for (Field field : consumableClass.getDeclaredFields()) {
+            String getterName = getAccessorNameForField("get", field.getName());
+            Method getter = null;
             try {
-                String getterName = getAccessorNameForField("get", field.getName());
-                Method getter = consumableClass.getDeclaredMethod(getterName);
-                result = result.concat(" " + field.getName() + ":" + getter.invoke(consumable).toString() + ",");
+                getter = consumableClass.getDeclaredMethod(getterName);
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+            }
+            if(!field.isAnnotationPresent(DisplayAs.class)) {
+                try {
+                    result = result.concat(field.getName() + ":" + getter.invoke(consumable).toString() + ",");
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+            else {
+                try {
+                    result = result.concat(field.getAnnotation(DisplayAs.class).value()   + ":" +  getter.invoke(consumable).toString() + ", ");
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
             }
 
         }
+//        Quelle: https://www.baeldung.com/java-remove-last-character-of-string
         result = result.substring(0, result.length() -1).concat("}");
-        show("{" + consumableClass.getSimpleName() + result);
+        show("{" + consumableClass.getSimpleName() + " " + result);
     }
 
 

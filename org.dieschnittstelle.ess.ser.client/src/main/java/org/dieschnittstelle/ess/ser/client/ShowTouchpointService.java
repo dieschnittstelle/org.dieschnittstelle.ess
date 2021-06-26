@@ -1,14 +1,18 @@
 package org.dieschnittstelle.ess.ser.client;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.Logger;
 import org.dieschnittstelle.ess.entities.crm.AbstractTouchpoint;
 import org.dieschnittstelle.ess.entities.crm.Address;
@@ -34,7 +38,7 @@ public class ShowTouchpointService {
 	 * the http client that can be used for accessing the service on tomcat - note that we are usying an async client here
 	 */
 	private CloseableHttpAsyncClient client;
-	
+
 	/**
 	 * the attribute that controls whether we are running through (when called from the junit test) or not
 	 */
@@ -102,7 +106,7 @@ public class ShowTouchpointService {
 
 	/**
 	 * read all touchpoints
-	 * 
+	 *
 	 * @return
 	 */
 	public List<AbstractTouchpoint> readAllTouchpoints() {
@@ -114,7 +118,6 @@ public class ShowTouchpointService {
 		logger.debug("client running: {}",client.isRunning());
 
 		// demonstrate access to the asynchronously running servlet (client-side access is asynchronous in any case)
-		boolean async = false;
 
 		try {
 
@@ -122,16 +125,10 @@ public class ShowTouchpointService {
 
 			// UE SER1: Aendern Sie die URL von api->gui
 			HttpGet get = new HttpGet(
-					"http://localhost:8080/api/" + (async ? "async/touchpoints" : "touchpoints"));
+					"http://localhost:8080/api/touchpoints");
 
 			logger.info("readAllTouchpoints(): about to execute request: " + get);
 
-			// mittels der <request>.setHeader() Methode koennen Header-Felder
-			// gesetzt werden
-
-			// execute the method and obtain the response - for AsyncClient this will be a future from
-			// which the response object can be obtained synchronously calling get() - alternatively, a FutureCallback can
-			// be passed to the execute() method
 			Future<HttpResponse> responseFuture = client.execute(get, null);
 			logger.info("readAllTouchpoints(): received response future...");
 
@@ -168,7 +165,7 @@ public class ShowTouchpointService {
 
 	/**
 	 * TODO SER4
-	 * 
+	 *
 	 * @param tp
 	 */
 	public void deleteTouchpoint(AbstractTouchpoint tp) {
@@ -178,16 +175,30 @@ public class ShowTouchpointService {
 
 		logger.debug("client running: {}",client.isRunning());
 
+		HttpDelete deleteRequest = new HttpDelete("http://localhost:8080/api/touchpoints/" + tp.getId());
+
+		try {
+			Future<HttpResponse> responseFuture = client.execute(deleteRequest,null);
+			HttpResponse response = responseFuture.get();
+			if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+				logger.info(" touchpoint width ID: " + tp.getId() + " deleted");
+			}else {
+				logger.error("server status: " + response.getStatusLine().getStatusCode());
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
+
 
 	/**
 	 * TODO SER3
-	 * 
+	 *
 	 * fuer das Schreiben des zu erzeugenden Objekts als Request Body siehe die
 	 * Hinweise auf:
 	 * http://stackoverflow.com/questions/10146692/how-do-i-write-to
 	 * -an-outpustream-using-defaulthttpclient
-	 * 
+	 *
 	 * @param tp
 	 */
 	public AbstractTouchpoint createNewTouchpoint(AbstractTouchpoint tp) {
@@ -200,44 +211,64 @@ public class ShowTouchpointService {
 		try {
 
 			// create post request for the api/touchpoints uri
+			HttpPost request = new HttpPost("http://localhost:8080/api/touchpoints");
 
 			// create an ObjectOutputStream from a ByteArrayOutputStream - the
 			// latter must be accessible via a variable
+			ByteArrayOutputStream bao = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(bao);
 
 			// write the object to the output stream
+			oos.writeObject(tp);
+
+			byte[] transportableObjectData = bao.toByteArray();
+
+			ByteArrayEntity requestBodyAndHeaderInformation = new ByteArrayEntity(transportableObjectData);
+
 
 			// create a ByteArrayEntity and pass it the byte array from the
 			// output stream
 
 			// set the entity on the request
+			request.setEntity(requestBodyAndHeaderInformation);
 
 			// execute the request, which will return a Future<HttpResponse> object
+			Future<HttpResponse> responseFuture = client.execute(request, null);
 
 			// get the response from the Future object
+			HttpResponse response = responseFuture.get();
 
 			// log the status line
+			show("response status: " + response.getStatusLine());
 
 			// evaluate the result using getStatusLine(), use constants in
 			// HttpStatus
 
 			/* if successful: */
+			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK); {
+				// create an object input stream using getContent() from the
+				// response entity (accessible via getEntity())
+				InputStream responseBody = response.getEntity().getContent();
+				ObjectInputStream responseBodyReader = new ObjectInputStream((responseBody));
 
-			// create an object input stream using getContent() from the
-			// response entity (accessible via getEntity())
+				// read the touchpoint object from the input stream
+				AbstractTouchpoint receivedTouchpoint = (AbstractTouchpoint)responseBodyReader.readObject();
 
-			// read the touchpoint object from the input stream
+				// return the object that you have read from the response
+				show("reveived touchpoint: %s", receivedTouchpoint);
+				show("sent touchpoint: %s", tp);
 
-			// return the object that you have read from the response
-			return null;
+				return receivedTouchpoint;
+			}
+
 		} catch (Exception e) {
 			logger.error("got exception: " + e, e);
 			throw new RuntimeException(e);
 		}
-
 	}
 
 	/**
-	 * 
+	 *
 	 * @param stepwise
 	 */
 	public void setStepwise(boolean stepwise) {

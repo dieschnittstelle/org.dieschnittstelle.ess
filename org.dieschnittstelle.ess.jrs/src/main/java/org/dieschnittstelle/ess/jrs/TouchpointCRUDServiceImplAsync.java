@@ -35,9 +35,9 @@ public class TouchpointCRUDServiceImplAsync {
 	 * here we will be passed the context parameters by the resteasy framework
 	 */
 	public TouchpointCRUDServiceImplAsync(@Context ServletContext servletContext, @Context HttpServletRequest request) {
-		this.service = new TouchpointCRUDServiceImpl(servletContext,request);
+//		this.service = new TouchpointCRUDServiceImpl(servletContext,request);
 	}
-	
+
 	@GET
 	public void readAllTouchpoints(@Suspended AsyncResponse response) {
 		logger.info("readAllTouchpoints()");

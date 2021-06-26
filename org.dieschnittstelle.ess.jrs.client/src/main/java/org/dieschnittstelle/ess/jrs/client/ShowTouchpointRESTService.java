@@ -40,7 +40,7 @@ public class ShowTouchpointRESTService {
 		show("serviceProxy: " + serviceProxy + " of class: " + serviceProxy.getClass());
 
 		// 1) read out all touchpoints
-		List<StationaryTouchpoint> touchpoints = serviceProxy.readAllTouchpoints();
+		List<StationaryTouchpoint> touchpoints = (List)serviceProxy.readAllTouchpoints();
 		logger.info("read touchpoints: " + touchpoints);
 
 		// 2) delete the touchpoint after next console input
@@ -63,7 +63,7 @@ public class ShowTouchpointRESTService {
 		StationaryTouchpoint tp = new StationaryTouchpoint(-1,
 				"BHT Verkaufsstand", addr);
 
-		tp = serviceProxy.createTouchpoint(tp);
+		tp = (StationaryTouchpoint) serviceProxy.createTouchpoint(tp);
 		logger.info("created touchpoint: " + tp);
 
 		/*
